@@ -25,13 +25,13 @@ setup:
         resource: service/skywalking-ui
         port: 80
   steps:
-    - name: install yq
+    - name: Install yq
       command: bash test/e2e/setup-e2e-shell/install.sh yq
-    - name: install swctl
+    - name: Install swctl
       command: bash test/e2e/setup-e2e-shell/install.sh swctl
-    - name: install kubectl
+    - name: Install kubectl
       command: bash test/e2e/setup-e2e-shell/install.sh kubectl
-    - name: install istio
+    - name: Install istio
       command: |
         bash test/e2e/setup-e2e-shell/install.sh istioctl
         istioctl install -y --set profile=demo \
