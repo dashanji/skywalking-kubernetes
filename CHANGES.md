@@ -2,80 +2,169 @@ Changes by Version
 ==================
 Release Notes.
 
-4.3.0
+0.9.0
 ------------------
 
-- Remove Istio adapter.
-- Add `.Values.oap.initEs` to work with ElasticSearch init job.
-- Add "pods/log" to OAP so on-demand Pod log can work.
+### Features
 
-4.2.0
+- Add the sub-command `dependency instance` to query instance relationships (#117)
+
+### Bug Fixes
+
+- fix: `multiple-linear` command's `labels` type can be string type (#122)
+- Add missing `dest-service-id` `dest-service-name` to `metrics linear` command (#121)
+- Fix the wrong name when getting `destInstance` flag (#118)
+
+### Chores
+
+- Upgrade Go version to 1.16 (#120)
+- Migrate tests to infra-e2e, overhaul the flags names (#119)
+- Publish Docker snapshot images to ghcr (#116)
+- Remove dist directory when build release source tar (#115)
+
+0.8.0
 ------------------
 
-- Fix Can't evaluate field Capabilities in type interface{}.
-- Update the document let that all docker images use the latest version.
-- Fix missing `nodes` resource permission when the OAP using `k8s-mesh` analyzer.
-- Fix bug that customized config files are not loaded into es-init job.
-- Add skywalking satellite support.
+### Features
 
-4.1.0
+- Add profile command
+- Add logs command
+- Add dependency command
+- Support query events protocol
+- Support auto-completion for bash and powershell
+
+### Bug Fixes
+
+- Fix missing service instance name in trace command
+
+### Chores
+
+- Optimize output by adding color to help information
+- Set display style explicitly for commands in the test script
+- Set different default display style for different commands
+- Add scripts for quick install
+- Update release doc and add scripts for release
+- split into multiple workflows to speed up CI
+
+0.7.0
 ------------------
 
-- Add missing service account to init job.
-- Improve notes.txt and `nodePort` configuration.
-- Improve ingress compatibility.
-- Fix bug that customized config files are not loaded into es-init job.
-- Add `imagePullSecrets` and node selector.
-- Fix istio adapter description.
-- Enhancement: allow mounting binary data files.
+### Features
 
-4.0.0
+- Add GitHub Action for integration of event reporter
+
+### Bug Fixes
+
+- Fix `metrics top` can't infer the scope automatically
+
+### Chores
+
+- Upgrade dependency crypto
+- Refactor project to use goapi
+- Move `parseScope` to pkg
+- Update release doc
+
+0.6.0
 ------------------
 
-#### Features
-- Allow overriding configurations files under /skywalking/config
-- Unify the usages of different SkyWalking versions
-- Add Values for init container in case of using private regestry
-- Add `services`, `endpoints` resources in ClusterRole
+### Features
 
-3.1.0
+- Support authorization when connecting to the OAP
+- Add `install` command and `manifest` sub-command
+- Add `event` command and `report` sub-command
+
+### Bug Fixes
+
+- Fix the bug that can't query JVM instance metrics
+
+### Chores
+
+- Set up a simple test with GitHub Actions
+- Reorganize the project layout
+- Update year in NOTICE
+- Add missing license of swck
+- Use license-eye to check license header
+
+0.5.0
 ------------------
 
-#### Features
-- Support SkyWalking 8.1.0
-- Support enable oap dynamic configuration through k8s configmap
+### Features
 
-#### Download
-- http://skywalking.apache.org/downloads/
+- Use template files in yaml format instead
+- Refactor `metrics` command to adopt metrics-v2 protocol
+- Use goroutine to speed up `dashboard global` command
+- Add `metrics list` command
 
-3.0.0
+### Bug Fixes
+
+- Add flags of instance, endpoint and normal for `metrics` command
+- Fix the problem of unable to query database metrics
+
+### Chores
+
+- Update release guide doc
+- Add screenshots for use cases in `README.md`
+- Introduce generated codes into codebase
+
+0.4.0
 ------------------
 
-#### Features
-- Support SkyWalking 8.0.1
+### Features
 
-##### Note:
-- 8.0.0 image is not suitable as chart image, ISSUE: https://github.com/apache/skywalking/issues/4953
+- Add `dashboard global` command with auto-refresh
+- Add `dashboard global-metrics` command
+- Add traces search
+- Refactor `metrics thermodynamic` command to adopt the new query protocol
 
-2.0.0
+### Bug Fixes
+
+- Fix wrong golang standard time
+
+0.3.0
 ------------------
 
-#### Features
-- Support SkyWalking 7.0.0
-- Support set ES user/password
-- Add CI for release
+### Features
 
-1.1.0
+- Add health check command
+- Add `trace` command
+
+### Bug Fixes
+
+- Fix wrong metrics graphql path
+
+### Chores
+
+- Move tools setup into Makefile to easy the setup work locally
+
+0.2.0
 ------------------
 
-#### Features
-- Support SkyWalking 6.6.0
-- Support deploy Elasticsearch 7
-- The official helm repo was changed to the official Elasticsearch repo (https://helm.elastic.co/)
+### Features
 
-1.0.0
+- Support visualization of heat map
+- Support top N entities, `swctl metrics top 5 --name service_sla`
+- Support thermodynamic metrics, `swctl metrics thermodynamic --name all_heatmap`
+- Support multiple linear metrics, `swctl --display=graph --debug metrics multiple-linear --name all_percentile`
+- Automatically make use of server timezone API when possible
+
+### Chores
+
+- Generate GraphQL codes dynamically
+- Update merge buttons to only allow squash and commit
+- Add release guide doc
+- Update NOTICE year
+
+0.1.0
 ------------------
 
-#### Features
-- Deploy SkyWalking by Chart
-- Elasticsearch deploy optional
+### Features
+
+- Add command `swctl service` to list services
+- Add command `swctl instance` and `swctl search` to list and search instances of service.
+- Add command `swctl endpoint` to list endpoints of service.
+- Add command `swctl linear-metrics` to query linear metrics and plot the metrics in Ascii Graph mode.
+- Add command `swctl single-metrics` to query single-value metrics.
+
+### Chores
+
+- Set up GitHub actions to check code styles, licenses, and tests.

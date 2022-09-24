@@ -1,5 +1,4 @@
-.DS_Store
-*~
 .idea
-.vscode
-chart/skywalking/charts/
+bin
+coverage.txt
+.DS_Store

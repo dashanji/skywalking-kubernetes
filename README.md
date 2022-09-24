@@ -1,153 +1,162 @@
-Apache SkyWalking Kubernetes
-==========
+Apache SkyWalking CLI
+===============
+
+![](https://github.com/apache/skywalking-cli/workflows/Build/badge.svg?branch=master)
+![](https://codecov.io/gh/apache/skywalking-cli/branch/master/graph/badge.svg)
 
 <img src="https://skywalking.apache.org/assets/logo.svg" alt="Sky Walking logo" height="90px" align="right" />
 
-[![GitHub stars](https://img.shields.io/github/stars/apache/skywalking.svg?style=for-the-badge&label=Stars&logo=github)](https://github.com/apache/skywalking)
-[![Twitter Follow](https://img.shields.io/twitter/follow/asfskywalking.svg?style=for-the-badge&label=Follow&logo=twitter)](https://twitter.com/AsfSkyWalking)
+The CLI (Command Line Interface) for [Apache SkyWalking](https://github.com/apache/skywalking).
 
-SkyWalking Kubernetes repository provides ways to install and configure SkyWalking in a Kubernetes cluster.
-The scripts are written in Helm 3.
+SkyWalking CLI is a command interaction tool for the SkyWalking user or OPS team, as an alternative besides using
+browser GUI. It is based on SkyWalking [GraphQL query protocol](https://github.com/apache/skywalking-query-protocol),
+same as GUI.
 
-# Chart Detailed Configuration
+## Install
 
-Chart detailed configuration can be found at [Chart Readme](./chart/skywalking/README.md)
+### Quick install
 
-There are required values that you must set explicitly when deploying SkyWalking.
+#### Linux or macOS
 
-| name | description | example |
-| ---- | ----------- | ------- |
-| `oap.image.tag` | the OAP docker image tag | `9.2.0` |
-| `oap.storageType` | the storage type of the OAP | `elasticsearch`, `postgresql`, etc. |
-| `oap.initEs`   | need to initial ElasticSearch  | `true`, `false` |
-| `ui.image.tag` | the UI docker image tag | `9.2.0` |
-
-You can set these required values via command line (e.g. `--set oap.image.tag=9.2.0 --set oap.storageType=elasticsearch`),
-or edit them in a separate file(e.g. [`values.yaml`](chart/skywalking/values-es6.yaml), [`values-es7.yaml`](chart/skywalking/values-es7.yaml))
-and use `-f <filename>` or `--values=<filename>` to set them.
-
-# Install
-
-Let's set some variables for convenient use later.
+Install the latest version with the following command:
 
 ```shell
-export SKYWALKING_RELEASE_NAME=skywalking  # change the release name according to your scenario
-export SKYWALKING_RELEASE_NAMESPACE=default  # change the namespace to where you want to install SkyWalking
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.sh)"
 ```
 
-## Install released version using Helm repository
+#### Windows
+
+Note: you need to start cmd or powershell in administrator mode.
 
 ```shell
-export REPO=skywalking
-helm repo add ${REPO} https://apache.jfrog.io/artifactory/skywalking-helm
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set oap.image.tag=9.2.0 \
-  --set oap.storageType=elasticsearch \
-  --set ui.image.tag=9.2.0 \
-  --set elasticsearch.imageTag=6.8.6
+curl -LO "https://raw.githubusercontent.com/apache/skywalking-cli/tree/master/scripts/install.bat" && .\install.bat
 ```
 
-## Install development version using master branch
+### Install by available binaries
 
-This is needed **only** when you want to install from master branch.
+Go to the [download page](https://skywalking.apache.org/downloads/#SkyWalkingCLI) to download all available binaries,
+including macOS, Linux, Windows.
 
-```shell script
-export REPO=chart
-git clone https://github.com/apache/skywalking-kubernetes
-cd skywalking-kubernetes
-helm repo add elastic https://helm.elastic.co
-helm dep up ${REPO}/skywalking
+### Build from source
+
+If you want to try the latest features, you can compile the latest source code and build `swctl` by yourself. Since
+SkyWalking CLI is using `Makefile`, compiling the project is as easy as executing a command in the root directory of the
+project.
+
+```shell
+git clone https://github.com/apache/skywalking-cli
+cd skywalking-cli
+make
 ```
 
-## Install a specific version of SkyWalking & Elasticsearch
+Then copy the `./bin/swctl-latest-(darwin|linux|windows)-amd64` to your `PATH` directory according to your OS,
+usually `/usr/bin/` or `/usr/local/bin`.
 
-In theory, you can deploy all versions of SkyWalking that are >= 6.0.0-GA, by specifying the desired `oap.image.tag`/`ui.image.tag`.
+You can also copy it to any directory you like, then add that directory to `PATH`. **We recommend you to rename
+the `swctl-latest-(darwin|linux|windows)-amd64` to `swctl`.**
 
-Please note that some configurations that are added in the later versions of SkyWalking may not work in earlier versions, and thus if you
-specify those configurations, they may take no effect.
+### Run from Docker image
 
-here are some examples.
+If you prefer to use Docker, skywalking-cli also provides Docker images for convenient usages since 0.9.0. We also push
+the snapshot Docker images to GitHub registry for developers who want to test the latest features, note that this is not
+Apache releases, and it's for test only, **DO NOT** use it in your production environment.
 
-- Deploy SkyWalking 9.2.0 & Elasticsearch 6.8.6
+```shell
+docker run -it --rm apache/skywalking-cli service ls
 
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set oap.image.tag=9.2.0 \
-  --set oap.storageType=elasticsearch \
-  --set ui.image.tag=9.2.0 \
-  --set elasticsearch.imageTag=6.8.6
+# Or to use the snapshot Docker image
+
+docker run -it --rm ghcr.io/apache/skywalking-cli/skywalking-cli  service ls
 ```
 
-- Deploy SkyWalking 9.2.0 & Elasticsearch 7.5.1
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set oap.image.tag=9.2.0 \
-  --set oap.storageType=elasticsearch \
-  --set ui.image.tag=9.2.0 \
-  --set elasticsearch.imageTag=7.5.1
+## Autocompletion
+
+`swctl` provides auto-completion support for bash and powershell, which can save you a lot of typing.
+
+### Bash
+
+The swctl completion script for bash can be generated with the command `swctl completion bash`. Sourcing the completion
+script in your shell enables swctl auto-completion:
+
+```shell
+swctl completion bash > bash_autocomplete &&
+    sudo cp ./bash_autocomplete /etc/bash_completion.d/swctl &&
+    echo >> ~/.bashrc &&
+    echo "export PROG=swctl" >> ~/.bashrc
 ```
 
-- Deploy SkyWalking 6.6.0 with Elasticsearch 7
+After reloading your shell, swctl auto-completion should be working.
 
-**Note**: because SkyWalking OAP used 2 different Docker images for ElasticSearch 7 and ElasticSearch 6 in versions
-prior to 8.8.0, you have to set the right image tag for the corresponding ElasticSearch version.
+### powershell
 
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set oap.image.tag=6.6.0-es7 \
-  --set oap.storageType=elasticsearch7 \
-  --set ui.image.tag=6.6.0
+Similarly, run the following command in your powershell terminal to enable auto-completion:
+
+```shell 
+set-executionpolicy remotesigned -Scope CurrentUser
+swctl completion powershell >> $profile
 ```
 
-- Deploy SkyWalking 6.5.0
+If you get an error like `OpenError: (:) [Out-File], DirectoryNotFoundException`, then you need to run the following
+command to create `$profile` file:
 
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set oap.image.tag=6.5.0 \
-  --set oap.storageType=elasticsearch \
-  --set ui.image.tag=6.5.0
+```shell
+New-Item -Type file -Force $profile
 ```
 
-## Install a specific version of SkyWalking with an existing Elasticsearch
+After reloading your shell, `swctl` auto-completion should be working.
 
-Modify the connection information to the existing elasticsearch cluster in file [`values-my-es.yaml`](chart/skywalking/values-my-es.yaml).
+## Help / Manual
 
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  -f ./skywalking/values-my-es.yaml
+`swctl` builds the help manual inside the command itself with some useful example commands, please type `swctl help`
+after installation. If you want to look up detail manual for a specific sub-command, insert `help` before the last
+sub-command, for example, `swctl service help list` shows the manual for command `swctl service list`,
+and `swctl install manifest help oap` shows the manual for `swctl install manifest oap`.
+
+# More Use Cases
+
+<details>
+<summary>Report events in CD workflows - GitHub Actions</summary>
+
+Integrate skywalking-cli into your CD workflows to report events, this is an implementation of GitHub Actions, but we
+welcome you to contribute plugins of other CD platforms, like Jenkins, GitLab, etc.
+
+The usage of integration for GitHub Actions is as follows.
+
+```yaml
+# ...
+
+jobs:
+  deploy:
+    strategy:
+      matrix:
+        instance:
+          - asia-southeast
+          - asia-northeast
+    name: Deploy Product Service
+    runs-on: ubuntu-latest
+    steps:
+      # other steps such as checkout ...
+
+      - name: Wrap the deployment steps with skywalking-cli
+        uses: apache/skywalking-cli@main # we always suggest using a revision instead of `main`
+        with:
+          oap-url: ${{ secrets.OAP_URL }}                       # Required. Set the OAP backend URL, such as example.com:11800
+          auth-token: ${{ secrets.OAP_AUTH_TOKEN }}             # Optional. OAP auth token if you enable authentication in OAP
+          service: product                                      # Required. Name of the service to be deployed
+          instance: ${{ matrix.instance }}                      # Required. Name of the instance to be deployed
+          endpoint: ""                                          # Optional. Endpoint of the service, if any
+          message: "Upgrade from {fromVersion} to {toVersion}"  # Optional. The message of the event
+          parameters: ""                                        # Optional. The parameters in the message, if any
+
+      # your package / deployment steps... 
 ```
 
-## Install SkyWalking with Satellite
+</details>
 
-Enable the satellite as gateway, and set the satellite image tag.
+# Contributing
 
-```shell script
-helm install "${SKYWALKING_RELEASE_NAME}" ${REPO}/skywalking -n "${SKYWALKING_RELEASE_NAMESPACE}" \
-  --set satellite.enabled=true \
-  --set satellite.image.tag=v0.4.0
-```
+For developers who want to contribute to this project, see [Contribution Guide](CONTRIBUTING.md)
 
-After satellite have been installed, you should replace the `oap` address to the `satellite` address, the address from agent or `istio`, such as `skywalking-satellite.istio-system:11800`.
+# License
 
-## Customization
-
-- Use your own configuration files
-
-Put your own configuration files according to [the overridable files](chart/skywalking/files/conf.d/README.md) under the
-working directory, `files/conf.d`, they will override the counterparts in the Docker image.
-
-- Pass environment variables to OAP
-
-The SkyWalking OAP exposes many configurations that can be specified by environment variables, as listed in [the main repo](https://github.com/apache/skywalking/blob/master/docs/en/setup/backend/configuration-vocabulary.md).
-You can set those environment variables by `--set oap.env.<ENV_NAME>=<ENV_VALUE>`, such as `--set oap.env.SW_ENVOY_METRIC_ALS_HTTP_ANALYSIS=k8s-mesh`.
-
-> The environment variables take priority over the overrode configuration files.
-
-# Contact Us
-* Submit an [issue](https://github.com/apache/skywalking/issues)
-* Mail list: **dev@skywalking.apache.org**. Mail to `dev-subscribe@skywalking.apache.org`, follow the reply to subscribe the mail list.
-* Join `skywalking` channel at [Apache Slack](https://join.slack.com/t/the-asf/shared_invite/enQtNzc2ODE3MjI1MDk1LTAyZGJmNTg1NWZhNmVmOWZjMjA2MGUyOGY4MjE5ZGUwOTQxY2Q3MDBmNTM5YTllNGU4M2QyMzQ4M2U4ZjQ5YmY). If the link is not working, find the latest one at [Apache INFRA WIKI](https://cwiki.apache.org/confluence/display/INFRA/Slack+Guest+Invites).
-* QQ Group: 392443393(2000/2000, not available), 901167865(available)
-
-# LICENSE
-Apache 2.0
+[Apache 2.0 License.](/LICENSE)

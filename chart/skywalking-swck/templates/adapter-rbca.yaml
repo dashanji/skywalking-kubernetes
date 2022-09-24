@@ -18,7 +18,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Values.adapter.serviceAccountName }}
-  namespace: {{ .Release.Namespace }}
+  namespace: {{ .Values.adapter.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -60,8 +60,8 @@ roleRef:
   name: extension-apiserver-authentication-reader
 subjects:
 - kind: ServiceAccount
-  name: {{ include "skywalking-swck.fullname" . }}-custom-metrics-apiserver
-  namespace: {{ .Relase.Namespace }}
+  name: {{ .Values.adapter.serviceAccountName }}
+  namespace: {{ .Values.adapter.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -87,7 +87,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.adapter.serviceAccountName }}
-  namespace: {{ .Relase.Namespace }}
+  namespace: {{ .Values.adapter.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -100,5 +100,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.adapter.serviceAccountName }}
-  namespace: {{ .Relase.Namespace }}
+  namespace: {{ .Values.adapter.namespace }}
 {{ end }}

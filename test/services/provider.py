@@ -15,16 +15,23 @@
 # limitations under the License.
 #
 
-github:
-  description: Apache SkyWalking CLI
-  homepage: https://skywalking.apache.org/
-  labels:
-    - skywalking
-    - observability
-    - apm
-    - distributed-tracing
-    - cli
-  enabled_merge_buttons:
-    squash: true
-    merge: false
-    rebase: false
+import time
+
+if __name__ == '__main__':
+    import socketserver
+    from http.server import BaseHTTPRequestHandler
+
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+
+        def do_POST(self):
+            time.sleep(0.5)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write('{"song": "Despacito", "artist": "Luis Fonsi"}'.encode('ascii'))
+
+    PORT = 9091
+    Handler = SimpleHTTPRequestHandler
+
+    with socketserver.TCPServer(("", PORT), Handler) as httpd:
+        httpd.serve_forever()

@@ -81,7 +81,7 @@ spec:
           protocol: TCP
       securityContext:
         runAsNonRoot: true
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ include "skywalking-swck.fullname" . }}-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:
       - name: cert

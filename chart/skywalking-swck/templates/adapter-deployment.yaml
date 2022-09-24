@@ -14,6 +14,11 @@
 # limitations under the License.
 
 {{- if .Values.adapter.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.adapter.namespace }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,7 +26,7 @@ metadata:
     app: {{ include "skywalking-swck.fullname" . }}-custom-metrics-apiserver
     {{- include "skywalking-swck.labels" . | nindent 4 }}
   name: {{ include "skywalking-swck.fullname" . }}-adapter
-  namespace: {{ .Relase.Namespace }}
+  namespace: {{ .Values.adapter.namespace }}
 spec:
   replicas: {{ .Values.adapter.replicaCount }}
   selector:
@@ -37,10 +42,10 @@ spec:
     spec:
       containers:
       - args:
-        - --secure-port={{ .Valuse.adapter.service.port }}
+        - --secure-port={{ .Values.adapter.service.port }}
         - --logtostderr=true
         - --v=10
-        - --oap-addr=http://{{ .Values.adapter.oap.service.name }}.{{ .Values.adapter.oap.service.namespace }}:{{ .Values.adapter.oap.service.port }/graphql
+        - --oap-addr=http://{{ .Values.adapter.oap.service.name }}.{{ .Values.adapter.oap.service.namespace }}:{{ .Values.adapter.oap.service.port }}/graphql
         - --cert-dir=/tmp
         command:
         - /adapter
@@ -50,7 +55,7 @@ spec:
         resources:
           {{- toYaml .Values.adapter.resources | nindent 12 }}
         ports:
-        - containerPort: {{ .Valuse.adapter.service.port }}
+        - containerPort: {{ .Values.adapter.service.port }}
           name: https
         volumeMounts:
         - mountPath: /tmp

@@ -19,6 +19,7 @@
 
 adapter:
   enabled: false
+  namespace: skywalking-custom-metrics-system
   replicaCount: 1
   serviceAccountName: skywalking-custom-metrics-apiserver
   image:

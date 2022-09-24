@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,18 +12,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-github:
-  description: Apache SkyWalking CLI
-  homepage: https://skywalking.apache.org/
-  labels:
-    - skywalking
-    - observability
-    - apm
-    - distributed-tracing
-    - cli
-  enabled_merge_buttons:
-    squash: true
-    merge: false
-    rebase: false
+FROM golang:1.16 AS builder
+
+ARG VERSION
+
+ENV VERSION=$VERSION
+ENV CGO_ENABLED=0
+ENV GO111MODULE=on
+
+WORKDIR /cli
+
+COPY go.* ./
+
+RUN go mod download
+
+COPY . .
+
+RUN make install DESTDIR=/
+
+FROM alpine
+
+COPY --from=builder /swctl /swctl
+
+COPY .github/scripts/* /
+
+ENTRYPOINT [ "/swctl" ]
